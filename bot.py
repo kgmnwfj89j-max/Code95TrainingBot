@@ -6,13 +6,14 @@ from collections import defaultdict
 
 import telebot
 from telebot import types
-
+import psycopg
 BASE_DIR = Path(__file__).resolve().parent
 TOKEN = os.getenv("BOT_TOKEN")
-
+DATABASE_URL = os.getenv("DATABASE_URL")
 if not TOKEN:
     raise RuntimeError("BOT_TOKEN is not set")
-
+if not DATABASE_URL:
+    raise RuntimeError("DATABASE_URL is not set")
 bot = telebot.TeleBot(TOKEN)
 
 with open(BASE_DIR / "questions.json", "r", encoding="utf-8") as f:
