@@ -28,6 +28,15 @@ def init_db():
                     last_activity TIMESTAMPTZ DEFAULT NOW()
                 )
             """)
+            cur.execute("""
+                ALTER TABLE users
+                ADD COLUMN IF NOT EXISTS free_questions_used INTEGER DEFAULT 0,
+                ADD COLUMN IF NOT EXISTS premium_until TIMESTAMPTZ,
+                ADD COLUMN IF NOT EXISTS manual_access_until TIMESTAMPTZ,
+                ADD COLUMN IF NOT EXISTS total_answers INTEGER DEFAULT 0,
+                ADD COLUMN IF NOT EXISTS correct_answers INTEGER DEFAULT 0,
+                ADD COLUMN IF NOT EXISTS wrong_answers INTEGER DEFAULT 0;
+            """)
         conn.commit()
 
 
