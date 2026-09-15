@@ -32,6 +32,31 @@ def init_db():
 
 
 init_db()
+def save_user(user):
+    with psycopg.connect(DATABASE_URL) as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO users (
+                    telegram_id,
+                    first_name,
+                    last_name,
+                    username,
+                    last_activity
+                )
+                VALUES (%s, %s, %s, %s, NOW())
+                ON CONFLICT (telegram_id)
+                DO UPDATE SET
+                    first_name = EXCLUDED.first_name,
+                    last_name = EXCLUDED.last_name,
+                    username = EXCLUDED.username,
+                    last_activity = NOW()
+            """, (
+                user.id,
+                user.first_name,
+                user.last_name,
+                user.username
+            ))
+        conn.commit()
 with open(BASE_DIR / "questions.json", "r", encoding="utf-8") as f:
     QUESTIONS = json.load(f)
 
@@ -239,6 +264,7 @@ def finish_session(chat_id):
 
 @bot.message_handler(commands=["start", "menu"])
 def cmd_start(message):
+    save_user(message.from_user)
     bot.send_message(
         message.chat.id,
         "🚛 Code 95 Training Bot\n\n"
