@@ -37,6 +37,15 @@ def init_db():
                 ADD COLUMN IF NOT EXISTS correct_answers INTEGER DEFAULT 0,
                 ADD COLUMN IF NOT EXISTS wrong_answers INTEGER DEFAULT 0;
             """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS answer_history (
+                    id BIGSERIAL PRIMARY KEY,
+                    telegram_id BIGINT NOT NULL,
+                    question_id INTEGER NOT NULL,
+                    is_correct BOOLEAN NOT NULL,
+                    answered_at TIMESTAMPTZ DEFAULT NOW()
+                )
+            """)
         conn.commit()
 
 
