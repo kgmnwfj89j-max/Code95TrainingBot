@@ -15,7 +15,23 @@ if not TOKEN:
 if not DATABASE_URL:
     raise RuntimeError("DATABASE_URL is not set")
 bot = telebot.TeleBot(TOKEN)
+def init_db():
+    with psycopg.connect(DATABASE_URL) as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS users (
+                    telegram_id BIGINT PRIMARY KEY,
+                    first_name TEXT,
+                    last_name TEXT,
+                    username TEXT,
+                    registered_at TIMESTAMPTZ DEFAULT NOW(),
+                    last_activity TIMESTAMPTZ DEFAULT NOW()
+                )
+            """)
+        conn.commit()
 
+
+init_db()
 with open(BASE_DIR / "questions.json", "r", encoding="utf-8") as f:
     QUESTIONS = json.load(f)
 
